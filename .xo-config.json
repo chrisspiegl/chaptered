@@ -1,0 +1,19 @@
+{
+  "rules": {
+    "semi": "off",
+    "indent": ["error", 2],
+    "arrow-parens": ["error", "always"],
+    "no-unused-vars": "warn",
+    "capitalized-comments": "off",
+    "comma-dangle": ["error", "always-multiline"],
+    "object-curly-spacing": ["error", "always"],
+    "import/extensions": "off",
+    "node/file-extension-in-import": "off",
+    "unicorn/filename-case": ["error", {
+      "cases": {
+        "camelCase": true,
+        "pascalCase": true
+      }
+    }]
+  }
+}

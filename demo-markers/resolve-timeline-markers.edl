@@ -1,0 +1,18 @@
+TITLE: 3-zoom-f6-line-level-output-mic-level-receiver
+FCM: NON-DROP FRAME
+
+001  001      V     C        01:00:00:00 01:00:00:01 01:00:00:00 01:00:00:01  
+ |C:ResolveColorBlue |M:Intro |D:1
+
+002  001      V     C        01:04:49:03 01:04:49:04 01:04:49:03 01:04:49:04
+ |C:ResolveColorRed |M:video point in focus |D:1
+
+003  001      V     C        01:04:59:01 01:04:59:02 01:04:59:01 01:04:59:02
+ |C:ResolveColorBlue |M:First Sound Samples |D:1
+
+004  001      V     C        01:05:40:11 01:05:40:12 01:05:40:11 01:05:40:12
+ |C:ResolveColorRed |M:INSERT SAMPLES HERE |D:1
+
+005  001      V     C        01:25:05:00 01:25:05:01 01:25:05:00 01:25:05:01
+ |C:ResolveColorBlue |M:Outro |D:1
+
