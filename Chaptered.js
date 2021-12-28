@@ -11,7 +11,6 @@ import { unraw } from 'unraw'
 /**
 TODO:
 
-
 Test Different Marker Formats with Interface
 
 Make library work with `import` and `require`
@@ -59,7 +58,7 @@ class Chaptered {
           header: {
             show: true,
             template: '# Show Notes',
-            locals: {}
+            locals: {},
           },
           footer: {
             show: true,
@@ -114,10 +113,7 @@ class Chaptered {
 
   parse(input) {
     if (new String(this.input).valueOf() === new String(input).valueOf()) return this // if the last input is exactly the same as the new input we don't have to run anything at this point
-    return this.setInput(input.trim())
-      .determinFiletype()
-      .parseCSV()
-      .cleanRecords()
+    return this.setInput(input.trim()).determinFiletype().parseCSV().cleanRecords()
   }
 
   determinFiletype() {
@@ -219,8 +215,8 @@ class Chaptered {
           title: record.notes,
           description: record.comments,
           timecode: {
-            in: this.parseTimecode(record.recordIn, {resolveFloor: true}),
-            out: this.parseTimecode(record.recordOut, {resolveFloor: true}),
+            in: this.parseTimecode(record.recordIn, { resolveFloor: true }),
+            out: this.parseTimecode(record.recordOut, { resolveFloor: true }),
             duration: undefined,
           },
           type: record.color,
@@ -247,7 +243,7 @@ class Chaptered {
 
     const regexDefault = /^(?:(?<h>\d*)[:|;]){0,1}(?<m>\d{1,2})[:|;](?<s>\d{1,2})(?:(?<d>:|;|\.)(?<ms>\d{1,3})){0,1}$/i
     const regexMustHaveMilliseconds = /^(?:(?<h>\d*)[:|;]){0,1}(?<m>\d{1,2})[:|;](?<s>\d{1,2})(?:(?<d>:|;|\.)(?<ms>\d{1,3})){1}$/i
-    const parts = (options.hasMilliseconds) ? regexMustHaveMilliseconds.exec(timecode) : regexDefault.exec(timecode)
+    const parts = options.hasMilliseconds ? regexMustHaveMilliseconds.exec(timecode) : regexDefault.exec(timecode)
     const timeParts = {}
     if (!parts) return `[timecode "${timecode}" invalid format]`
     timeParts.hours = Number.parseInt(isEmpty(parts.groups.h) ? 0 : parts.groups.h, 10)
@@ -303,18 +299,18 @@ class Chaptered {
     // console.log(`includeLeadingHours:`, includeLeadingHours)
     // console.log(`includeLeadingZeros:`, includeLeadingZeros)
     // console.log(`timeString:`, timeString)
-    timeString += String(timeParts.minutes).padStart((['always', 'notHour'].includes(includeLeadingZeros)) ? 2 : 0, '0')
+    timeString += String(timeParts.minutes).padStart(['always', 'notHour'].includes(includeLeadingZeros) ? 2 : 0, '0')
     timeString += ':'
     // console.log(`timeString:`, timeString)
     // Seconds
-    timeString += String(timeParts.seconds).padStart((['always', 'notHour'].includes(includeLeadingZeros)) ? 2 : 0, '0')
+    timeString += String(timeParts.seconds).padStart(['always', 'notHour'].includes(includeLeadingZeros) ? 2 : 0, '0')
     if (includeMilliseconds) {
       // Delimiter
       timeString += delimiter
-      const ms = (timeParts.milliseconds >= 0) ? timeParts.milliseconds : timeParts.frames
+      const ms = timeParts.milliseconds >= 0 ? timeParts.milliseconds : timeParts.frames
       // Milliseconds or Frames
       if (['always', 'notHour'].includes(includeLeadingZeros)) {
-        const padding = (delimiter === '.') ? 3 : 2
+        const padding = delimiter === '.' ? 3 : 2
         timeString += String(ms).padStart(padding, '0')
       } else {
         timeString += String(ms)
@@ -326,11 +322,11 @@ class Chaptered {
   millisecondsToTimeParts(inputMilliseconds) {
     const timeParts = {}
     timeParts.hours = Math.floor(inputMilliseconds / (3600 * 1000))
-    inputMilliseconds %= (3600 * 1000)
+    inputMilliseconds %= 3600 * 1000
     timeParts.minutes = Math.floor(inputMilliseconds / (60 * 1000))
-    inputMilliseconds %= (60 * 1000)
-    timeParts.seconds = Math.floor(inputMilliseconds / (1000))
-    inputMilliseconds %= (1000)
+    inputMilliseconds %= 60 * 1000
+    timeParts.seconds = Math.floor(inputMilliseconds / 1000)
+    inputMilliseconds %= 1000
     timeParts.milliseconds = inputMilliseconds
     return timeParts
   }
@@ -394,9 +390,9 @@ class Chaptered {
 
   formatLine(record) {
     const lineTemplate = this.options.format.record.line.template
-    record.timeIn = (!isEmpty(record.timecode.in)) ? this.formatTimeString(record.timecode.in) : ''
-    record.timeOut = (!isEmpty(record.timecode.out)) ? this.formatTimeString(record.timecode.out) : ''
-    record.timeDuration = (!isEmpty(record.timecode.duration)) ? this.formatTimeString(record.timecode.duration) : ''
+    record.timeIn = !isEmpty(record.timecode.in) ? this.formatTimeString(record.timecode.in) : ''
+    record.timeOut = !isEmpty(record.timecode.out) ? this.formatTimeString(record.timecode.out) : ''
+    record.timeDuration = !isEmpty(record.timecode.duration) ? this.formatTimeString(record.timecode.duration) : ''
     record.line = unraw(pupa(lineTemplate, this.locals('line', record)))
     return record
   }
@@ -414,18 +410,22 @@ class Chaptered {
     options.section.order = options.section.order.toLowerCase()
     if (!['asc', 'desc'].includes(options.section.order)) options.section.order = 'asc'
 
-    let output = (options.header.show) ? pupa(options.header.template, this.locals('header', options.header.locals)) + '\n' : ''
+    let output = options.header.show ? pupa(options.header.template, this.locals('header', options.header.locals)) + '\n' : ''
 
     const uniqBy = (arr, predicate) => {
       const cb = typeof predicate === 'function' ? predicate : (o) => o[predicate]
 
-      return [...arr.reduce((map, item) => {
-        const key = (item === null || item === undefined) ? item : cb(item)
+      return [
+        ...arr
+          .reduce((map, item) => {
+            const key = item === null || item === undefined ? item : cb(item)
 
-        map.has(key) || map.set(key, item)
+            map.has(key) || map.set(key, item)
 
-        return map
-      }, new Map()).values()]
+            return map
+          }, new Map())
+          .values(),
+      ]
     }
 
     if (options.section.sections) {
@@ -434,7 +434,11 @@ class Chaptered {
       if (options.section.order && options.section.order === 'desc') sections.reverse()
       const outputSections = sections.map((section) => {
         let text = '\n'
-        text += (options.section.headline.show) ? pupa(options.section.headline.template, {title: section.charAt(0).toUpperCase() + section.substr(1)}) : ''
+        text += options.section.headline.show
+          ? pupa(options.section.headline.template, {
+              title: section.charAt(0).toUpperCase() + section.substr(1),
+            })
+          : ''
         text += '\n'
         text += this.outputSection(options.section.sectionBy, section)
         return text
@@ -444,14 +448,17 @@ class Chaptered {
       output += '\n' + this.records.cleaned.map((r) => this.formatLine(r).line).join('\n')
     }
 
-    output += (options.footer.show) ? '\n\n' + pupa(options.footer.template, this.locals('footer', options.footer.locals)) : ''
+    output += options.footer.show ? '\n\n' + pupa(options.footer.template, this.locals('footer', options.footer.locals)) : ''
     output += '\n'
 
     return output
   }
 
   outputSection(sectionBy, sectionValue) {
-    return this.records.cleaned.filter((r) => r[sectionBy] === sectionValue).map((r) => this.formatLine(r).line).join('\n')
+    return this.records.cleaned
+      .filter((r) => r[sectionBy] === sectionValue)
+      .map((r) => this.formatLine(r).line)
+      .join('\n')
   }
 
   locals(local, locals) {
@@ -473,4 +480,3 @@ class Chaptered {
 }
 
 export default Chaptered
-

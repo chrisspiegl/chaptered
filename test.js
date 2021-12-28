@@ -15,7 +15,7 @@ const contentsAudition = fs.readFileSync(filePathAudition, detectFileSync(filePa
 const contentsPremiere = fs.readFileSync(filePathPremiere, detectFileSync(filePathPremiere)).trim() // make sure to read file in correct encoding, premire needs utf-16le others may be differnt. https://stackoverflow.com/questions/50045841/how-to-detect-file-encoding-in-nodejs/50045951
 const contentsPremiereSemicolon = fs.readFileSync(filePathPremiereSemicolon, detectFileSync(filePathPremiereSemicolon)).trim() // make sure to read file in correct encoding, premire needs utf-16le others may be differnt. https://stackoverflow.com/questions/50045841/how-to-detect-file-encoding-in-nodejs/50045951
 
-console.log('Test file currently being run:', test.meta.file);
+console.log('Test file currently being run:', test.meta.file)
 
 test('chaptered options can be set', (t) => {
   const chaptered = new Chaptered({}).setOptions({
@@ -24,7 +24,7 @@ test('chaptered options can be set', (t) => {
         time: {
           includeLeadingHours: 'never',
         },
-      }
+      },
     },
   })
 
@@ -35,9 +35,15 @@ test('chaptered options can be set', (t) => {
 
 test('parseCSV throws', (t) => {
   const chaptered = new Chaptered({})
-  t.throws(() => chaptered.parseCSV(), { instanceOf: Error, message: 'input must be set' })
+  t.throws(() => chaptered.parseCSV(), {
+    instanceOf: Error,
+    message: 'input must be set',
+  })
   chaptered.setInput('foo')
-  t.throws(() => chaptered.parseCSV(), { instanceOf: Error, message: 'determinFiletype must be run before' })
+  t.throws(() => chaptered.parseCSV(), {
+    instanceOf: Error,
+    message: 'determinFiletype must be run before',
+  })
 })
 
 test('parseTimecode', (t) => {
@@ -62,24 +68,36 @@ test('parseTimecode', (t) => {
   })
   t.is(chaptered.hasLeadingHour, true)
 
-  t.like(chaptered.parseTimecode('12:44:20', { hasMilliseconds: true, resetHasLeadingHour: true }), {
-    delimiter: ':',
-    hours: 0,
-    minutes: 12,
-    seconds: 44,
-    frames: 20,
-    inMilliseconds: 764020,
-  })
+  t.like(
+    chaptered.parseTimecode('12:44:20', {
+      hasMilliseconds: true,
+      resetHasLeadingHour: true,
+    }),
+    {
+      delimiter: ':',
+      hours: 0,
+      minutes: 12,
+      seconds: 44,
+      frames: 20,
+      inMilliseconds: 764020,
+    }
+  )
   t.is(chaptered.hasLeadingHour, false)
 
-  t.like(chaptered.parseTimecode('12;44;20', { hasMilliseconds: true, resetHasLeadingHour: true }), {
-    delimiter: ';',
-    hours: 0,
-    minutes: 12,
-    seconds: 44,
-    frames: 20,
-    inMilliseconds: 764020,
-  })
+  t.like(
+    chaptered.parseTimecode('12;44;20', {
+      hasMilliseconds: true,
+      resetHasLeadingHour: true,
+    }),
+    {
+      delimiter: ';',
+      hours: 0,
+      minutes: 12,
+      seconds: 44,
+      frames: 20,
+      inMilliseconds: 764020,
+    }
+  )
   t.is(chaptered.hasLeadingHour, false)
 })
 
@@ -91,9 +109,9 @@ test('formatTimeString', (t) => {
       time: {
         includeLeadingHours: 'always',
         includeLeadingZeros: 'always',
-        includeMilliseconds: true
-      }
-    }
+        includeMilliseconds: true,
+      },
+    },
   }
   chaptered.setOptions(options)
   t.like(chaptered.options, options)
@@ -103,14 +121,14 @@ test('formatTimeString', (t) => {
 
   options = {
     format: {
-      record:{
+      record: {
         time: {
           includeLeadingHours: 'never',
           includeLeadingZeros: 'never',
-          includeMilliseconds: true
-        }
-      }
-    }
+          includeMilliseconds: true,
+        },
+      },
+    },
   }
   chaptered.setOptions(options)
   t.like(chaptered.options, options)
@@ -182,7 +200,10 @@ test('load premiere semicolon input', (t) => {
 test('determin unrecognized fileType', (t) => {
   const chaptered = new Chaptered({}).setInput('xxx')
   t.is(chaptered.input, 'xxx')
-  t.throws(() => chaptered.determinFiletype(), { instanceOf: Error, message: 'filetype unrecognized' })
+  t.throws(() => chaptered.determinFiletype(), {
+    instanceOf: Error,
+    message: 'filetype unrecognized',
+  })
 })
 
 test('determin audition fileType', (t) => {

@@ -9,11 +9,14 @@
     "object-curly-spacing": ["error", "always"],
     "import/extensions": "off",
     "node/file-extension-in-import": "off",
-    "unicorn/filename-case": ["error", {
-      "cases": {
-        "camelCase": true,
-        "pascalCase": true
+    "unicorn/filename-case": [
+      "error",
+      {
+        "cases": {
+          "camelCase": true,
+          "pascalCase": true
+        }
       }
-    }]
+    ]
   }
 }
